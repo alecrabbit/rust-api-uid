@@ -2,15 +2,15 @@
 
 use warp::Filter;
 use uuid::Uuid;
-// use uuid::v1::{Timestamp, Context};
 use ulid::Ulid;
+// use uuid::v1::{Timestamp, Context};
 // use std::time::{SystemTime};
 
 #[tokio::main]
 async fn main() {
     pretty_env_logger::init();
 
-    // let context = Context::new(42);
+    // let context = &Context::new(42);
     // let node_id = &[1, 2, 3, 4, 5, 6];
 
     let ulid = warp::path!("ulid").map(|| format!("{}", Ulid::new().to_string()));
@@ -18,14 +18,22 @@ async fn main() {
     // let uuid_v1 =
     //     warp::path!("uuid" / "v1")
     //         .map(
-    //             |context, node_id| {
+    //             || {
     //                 let now =
     //                     match SystemTime::now().duration_since(SystemTime::UNIX_EPOCH) {
     //                         Ok(n) => n,
     //                         Err(_) => panic!("SystemTime before UNIX EPOCH!"),
     //                     };
-    //                 let ts = Timestamp::from_unix(&context, now.as_secs(), now.as_nanos() as u32);
-    //                 format!("{}", Uuid::new_v1(ts, node_id).to_hyphenated().to_string())
+    //
+    //                 let ts = Timestamp::from_unix(context, now.as_secs(), now.as_nanos() as u32);
+    //
+    //                 format!(
+    //                     "{}",
+    //                     match Uuid::new_v1(ts, node_id) {
+    //                         Ok(generated) => generated.to_hyphenated().to_string(),
+    //                         Err(_) => format!("{}", "Failed to generate UUID!"),
+    //                     }
+    //                 )
     //             }
     //         );
 
