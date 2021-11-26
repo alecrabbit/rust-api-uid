@@ -1,18 +1,41 @@
 #![deny(warnings)]
 
 use warp::Filter;
-// use uuid::Uuid;
+use uuid::Uuid;
+// use uuid::v1::{Timestamp, Context};
 use ulid::Ulid;
+// use std::time::{SystemTime};
 
 #[tokio::main]
 async fn main() {
     pretty_env_logger::init();
 
-    let ulid = warp::path!("ulid").map(|| format!("{}", Ulid::new().to_string()));
-    let uuid_v1 = warp::path!("uuid" / "v1").map(|| format!("{} {}", "uuid", "v1"));
-    let uuid_v4 = warp::path!("uuid" / "v4").map(|| format!("{} {}", "uuid", "v4"));
+    // let context = Context::new(42);
+    // let node_id = &[1, 2, 3, 4, 5, 6];
 
-    let uid = warp::path("uid").and(ulid.or(uuid_v1).or(uuid_v4));
+    let ulid = warp::path!("ulid").map(|| format!("{}", Ulid::new().to_string()));
+
+    // let uuid_v1 =
+    //     warp::path!("uuid" / "v1")
+    //         .map(
+    //             |context, node_id| {
+    //                 let now =
+    //                     match SystemTime::now().duration_since(SystemTime::UNIX_EPOCH) {
+    //                         Ok(n) => n,
+    //                         Err(_) => panic!("SystemTime before UNIX EPOCH!"),
+    //                     };
+    //                 let ts = Timestamp::from_unix(&context, now.as_secs(), now.as_nanos() as u32);
+    //                 format!("{}", Uuid::new_v1(ts, node_id).to_hyphenated().to_string())
+    //             }
+    //         );
+
+    let uuid_v4 = warp::path!("uuid" / "v4").map(|| format!("{}", Uuid::new_v4().to_hyphenated().to_string()));
+
+    let uid = warp::path("uid").and(
+        ulid
+            .or(uuid_v4)
+            // .or(uuid_v1)
+    );
 
     let routes = warp::get().and(uid);
 
