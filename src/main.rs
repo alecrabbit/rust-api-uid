@@ -1,12 +1,14 @@
 #![deny(warnings)]
 
 use warp::Filter;
+// use uuid::Uuid;
+use ulid::Ulid;
 
 #[tokio::main]
 async fn main() {
     pretty_env_logger::init();
 
-    let ulid = warp::path!("ulid").map(|| format!("{}", "ulid"));
+    let ulid = warp::path!("ulid").map(|| format!("{}", Ulid::new().to_string()));
     let uuid_v1 = warp::path!("uuid" / "v1").map(|| format!("{} {}", "uuid", "v1"));
     let uuid_v4 = warp::path!("uuid" / "v4").map(|| format!("{} {}", "uuid", "v4"));
 
