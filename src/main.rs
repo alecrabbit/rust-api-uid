@@ -8,13 +8,18 @@ use ulid::Ulid;
 use serde_derive::{Serialize};
 
 #[derive(Serialize)]
+struct Response<T> {
+    data: T,
+}
+
+#[derive(Serialize)]
 struct UlidUID {
-    data: String,
+    ulid: String,
 }
 
 #[derive(Serialize)]
 struct UuidV4UID {
-    data: String,
+    uuid: String,
 }
 
 #[tokio::main]
@@ -34,16 +39,25 @@ async fn main() {
     let ulid =
         warp::path!("ulid")
             .map(|| {
-                let u = UlidUID { data: Ulid::new().to_string() };
-                warp::reply::json(&u)
+                let r = Response {
+                    data: UlidUID {
+                        ulid: Ulid::new().to_string()
+                    }
+                };
+                warp::reply::json(&r)
             });
 
     let uuid_v4 =
         warp::path!("uuid" / "v4")
             // map(|| format!("{}", Uuid::new_v4().to_hyphenated().to_string()));
             .map(|| {
-                let u = UuidV4UID { data: Uuid::new_v4().to_hyphenated().to_string() };
-                warp::reply::json(&u)
+                let r =
+                    Response {
+                        data: UuidV4UID {
+                            uuid: Uuid::new_v4().to_hyphenated().to_string()
+                        }
+                    };
+                warp::reply::json(&r)
             });
     let uid = warp::path("uid").and(
         ulid
