@@ -1,20 +1,19 @@
 #![deny(warnings)]
 
 use warp::Filter;
-// use uuid::Uuid;
+use uuid::Uuid;
 use ulid::Ulid;
 // use uuid::v1::{Timestamp, Context};
 // use std::time::{SystemTime};
-use serde_derive::{Deserialize, Serialize};
+use serde_derive::{Serialize};
 
-#[derive(Deserialize, Serialize)]
-struct Employee {
-    name: String,
-    rate: u32,
+#[derive(Serialize)]
+struct UlidUID {
+    data: String,
 }
 
-#[derive(Deserialize, Serialize)]
-struct UID {
+#[derive(Serialize)]
+struct UuidV4UID {
     data: String,
 }
 
@@ -35,13 +34,22 @@ async fn main() {
     let ulid =
         warp::path!("ulid")
             .map(|| {
-                        let u = UID { data:  Ulid::new().to_string() };
-                        warp::reply::json(&u)
-                    });
+                let u = UlidUID { data: Ulid::new().to_string() };
+                warp::reply::json(&u)
+            });
 
-    let uid =
-        warp::path("uid")
-            .and(ulid);
+    let uuid_v4 =
+        warp::path!("uuid" / "v4")
+            // map(|| format!("{}", Uuid::new_v4().to_hyphenated().to_string()));
+            .map(|| {
+                let u = UuidV4UID { data: Uuid::new_v4().to_hyphenated().to_string() };
+                warp::reply::json(&u)
+            });
+    let uid = warp::path("uid").and(
+        ulid
+            .or(uuid_v4)
+        // .or(uuid_v1)
+    );
 
     let routes = warp::get().and(uid);
 
