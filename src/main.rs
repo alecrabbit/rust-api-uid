@@ -35,7 +35,6 @@ async fn main() {
 
     let uuid_v4 =
         warp::path!("uuid" / "v4")
-            // map(|| format!("{}", Uuid::new_v4().to_hyphenated().to_string()));
             .map(|| {
                 let r =
                     Response {
